@@ -62,7 +62,6 @@
 </div>
 <!--二级页banner大图结束-->
 
-
 <div class="col1">
   <div class="title1">在线商城</div>
     <div id="news-search">
