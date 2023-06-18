@@ -36,12 +36,89 @@ INSERT INTO shop_prod  (
     prod_discount ,
     prod_content 
 ) VALUES (
-	2,
+	1,
 	'绿水鬼',
 	'/Users/mac_xnh/PHP_word/www/shop/images/b1.jpg',
 	259999,
 	254999,
 	'你值得拥有'
+),(
+	1,
+	'绿水鬼1',
+	'/Users/mac_xnh/PHP_word/www/shop/images/b2.jpg',
+	259999,
+	254999,
+	'你值得拥有'
+),(
+	1,
+	'绿水鬼2',
+	'/Users/mac_xnh/PHP_word/www/shop/images/b3.jpg',
+	259999,
+	254999,
+	'你值得拥有'
+),(
+	1,
+	'绿水鬼3',
+	'/Users/mac_xnh/PHP_word/www/shop/images/b4.jpg',
+	259999,
+	254999,
+	'你值得拥有'
+),(
+	1,
+	'绿水鬼4',
+	'/Users/mac_xnh/PHP_word/www/shop/images/b5.jpg',
+	259999,
+	254999,
+	'你值得拥有'
+),(
+	1,
+	'绿水鬼5',
+	'/Users/mac_xnh/PHP_word/www/shop/images/b6.jpg',
+	259999,
+	254999,
+	'你值得拥有'
+),(
+	4,
+	'LV',
+	'/Users/mac_xnh/PHP_word/www/shop/images/baobao1.jpg',
+	23999,
+	23999,
+	'驴牌包包👛你值得拥有'
+),(
+	4,
+	'LV',
+	'/Users/mac_xnh/PHP_word/www/shop/images/baobao2.jpg',
+	23999,
+	23999,
+	'驴牌包包👛你值得拥有'
+),(
+	4,
+	'LV',
+	'/Users/mac_xnh/PHP_word/www/shop/images/baobao3.jpg',
+	23999,
+	23999,
+	'驴牌包包👛你值得拥有'
+),(
+	4,
+	'LV',
+	'/Users/mac_xnh/PHP_word/www/shop/images/baobao4.jpg',
+	23999,
+	23999,
+	'驴牌包包👛你值得拥有'
+),(
+	4,
+	'LV',
+	'/Users/mac_xnh/PHP_word/www/shop/images/baobao5.jpg',
+	23999,
+	23999,
+	'驴牌包包👛你值得拥有'
+),(
+	4,
+	'LV',
+	'/Users/mac_xnh/PHP_word/www/shop/images/baobao6.jpg',
+	23999,
+	23999,
+	'驴牌包包👛你值得拥有'
 );
 
 #

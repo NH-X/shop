@@ -121,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows == 1) {
         // 登录成功
         // 这里可以添加进一步的操作，例如设置登录状态或跳转到其他页面
-        sqlClose($conn);
+        closeDB($conn);
         header("Location: index.php");
     } else {
         // 登录失败
@@ -131,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // 关闭数据库连接
-function sqlClose($connection){
+function closeDB($connection){
   $connection->close();
 }
 ?>

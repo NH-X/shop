@@ -1,3 +1,26 @@
+<?php
+// 读取配置文件
+$configFile = file_get_contents("config.json");
+$config = json_decode($configFile, true);
+
+// 从配置文件中获取数据库连接信息
+$servername = $config["servername"];
+$port = $config["port"];
+$user = $config["dbUser"];
+$dbPassword = $config["dbPassword"];
+$dbName = $config["dbName"];
+
+// 建立数据库连接
+$conn = new mysqli($servername, $user, $dbPassword, $dbName);
+if ($conn->connect_error) {
+    die("数据库连接失败: " . $conn->connect_error);
+}
+
+// 查询数据库中的商品类别
+$selectSql = "SELECT DISTINCT type_name FROM shop_type";
+$typeList = $conn->query($selectSql);
+?>
+
 <!doctype html>
 <html>
 <head>
@@ -74,7 +97,13 @@
     <div id="left">
       <ul>
         <li><a href="#">在线商城主页面</a></li>
-        <li><a href="#">商品类别</a></li>
+        <?php
+            // 循环显示商品类别
+            while ($row = $typeList->fetch_assoc()) {
+              $typeName = $row['type_name'];
+              echo "<li><a href='prod-type.php'>$typeName</a></li>";
+            }
+        ?>
       </ul>
       <div class="xwglbtn"><a href="./admin/admin-login.php">管理入口</a></div>
     </div>

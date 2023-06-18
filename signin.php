@@ -155,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // 关闭数据库连接
-function sqlClose($connection){
+function closeDB($connection){
   $connection->close();
 }
 ?>
