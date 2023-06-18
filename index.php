@@ -66,7 +66,7 @@
 <div class="col1">
   <div class="title1">在线商城</div>
     <div id="news-search">
-      <form id="form1" name="form1" method="post">
+      <form id="form1" name="form1" method="post" action="prod-find.php">
         商品搜索：
           <input name="search-name" type="text" id="search-name" placeholder="请输入搜索关键字">
         <input type="submit" name="sbtn" id="sbtn" value="搜 索" class="btn01">
