@@ -76,7 +76,7 @@
         <li><a href="#">在线商城主页面</a></li>
         <li><a href="#">商品类别</a></li>
       </ul>
-      <div class="xwglbtn"><a href="#">管理入口</a></div>
+      <div class="xwglbtn"><a href="./admin/admin-login.php">管理入口</a></div>
     </div>
     
     <div id="right">

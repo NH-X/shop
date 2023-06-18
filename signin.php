@@ -45,7 +45,7 @@
           </a>
         </li>
         <li class="mselect">
-          <a href="#">
+          <a href="index.php">
             <span class="en">ONLINE MART</span>
             <span class="cn">在线商城</span>
           </a>
@@ -102,3 +102,60 @@
 </div>
 </body>
 </html>
+
+<?php
+// 读取配置文件
+$configFile = file_get_contents("config.json");
+$config = json_decode($configFile, true);
+
+// 从配置文件中获取数据库连接信息
+$servername = $config["servername"];
+$port = $config["port"];
+$user = $config["dbUser"];
+$dbPassword = $config["dbPassword"];
+$dbName = $config["dbName"];
+
+// 建立数据库连接
+$conn = new mysqli($servername, $user, $dbPassword, $dbName);
+if ($conn->connect_error) {
+    die("数据库连接失败: " . $conn->connect_error);
+}
+
+// 处理注册请求
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // 获取表单提交的用户名和密码
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+    $truename=$_POST["truename"];
+    $address=$_POST["address"];
+    $phone=$_POST["phone"];
+    $email=$_POST["email"];
+
+    // 查询数据库中是否存在匹配的用户名
+    $selectSql = "SELECT * FROM shop_member WHERE mem_name = '$username'";
+    $result = $conn->query($selectSql);
+
+    if ($result->num_rows == 1) {
+        // 注册失败
+        echo "注册失败，用户（+$username+）已存在";
+    } else {
+        // 注册成功
+        // 这里可以添加进一步的操作，例如设置登录状态或跳转到其他页面
+        $insertSql = "INSERT INTO shop_member (mem_name, men_pwd, mem_tname, mem_address, mem_phone, mem_email)
+                      VALUES (?, ?, ?, ?, ?, ?)";
+
+        $stmt = $conn->prepare($insertSql);
+        $stmt->bind_param("ssssss", $username, $password, $truename, $address, $phone, $email);
+        if ($stmt->execute()) {
+            echo "注册成功";
+        } else {
+            echo "注册失败： " . $stmt->error;
+        }
+    }
+}
+
+// 关闭数据库连接
+function sqlClose($connection){
+  $connection->close();
+}
+?>

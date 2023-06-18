@@ -1,3 +1,6 @@
+<?php
+?>
+
 <!doctype html>
 <html>
 <head>
@@ -45,7 +48,7 @@
           </a>
         </li>
         <li class="mselect">
-          <a href="#">
+          <a href="">
             <span class="en">ONLINE MART</span>
             <span class="cn">在线商城</span>
           </a>
@@ -78,7 +81,7 @@
         <li><a href="#">在线商城主页面</a></li>
         <li><a href="#">商品类别</a></li>
       </ul>
-      <div class="xwglbtn"><a href="#">管理入口</a></div>
+      <div class="xwglbtn"><a href="./admin/admin-login.php">管理入口</a></div>
     </div>
     
     <div id="right">
@@ -109,3 +112,18 @@
 </div>
 </body>
 </html>
+
+<?php
+// 读取配置文件
+$configFile = file_get_contents("config.json");
+$config = json_decode($configFile, true);
+
+// 从配置文件中获取数据库连接信息
+$servername = $config["servername"];
+$port = $config["port"];
+$user = $config["dbUser"];
+$dbPassword = $config["dbPassword"];
+$dbName = $config["dbName"];
+
+
+?>

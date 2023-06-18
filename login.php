@@ -66,7 +66,7 @@
 <div class="col1">
   <div class="title1">会员登录</div>
     <div id="login">
-      <form id="form1" name="form1" method="post">
+      <form id="form1" name="form1" method="post" action="login.php">
         <ul>
           <li>用户名：
           <input name="username" type="text" required class="input04" id="username" placeholder="请输入用户名"></li>
@@ -89,3 +89,49 @@
 </div>
 </body>
 </html>
+
+<?php
+// 读取配置文件
+$configFile = file_get_contents("config.json");
+$config = json_decode($configFile, true);
+
+// 从配置文件中获取数据库连接信息
+$servername = $config["servername"];
+$port = $config["port"];
+$user = $config["dbUser"];
+$dbPassword = $config["dbPassword"];
+$dbName = $config["dbName"];
+
+// 建立数据库连接
+$conn = new mysqli($servername, $user, $dbPassword, $dbName);
+if ($conn->connect_error) {
+    die("数据库连接失败: " . $conn->connect_error);
+}
+
+// 处理登录请求
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // 获取表单提交的用户名和密码
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+
+    // 查询数据库中是否存在匹配的用户名和密码
+    $sql = "SELECT * FROM shop_member WHERE mem_name = '$username' AND men_pwd = '$password'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows == 1) {
+        // 登录成功
+        // 这里可以添加进一步的操作，例如设置登录状态或跳转到其他页面
+        sqlClose($conn);
+        header("Location: index.php");
+    } else {
+        // 登录失败
+        // 这里可以添加相应的提示或跳转到登录页面
+        echo "用户名或密码错误";
+    }
+}
+
+// 关闭数据库连接
+function sqlClose($connection){
+  $connection->close();
+}
+?>
