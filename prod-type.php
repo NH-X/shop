@@ -1,24 +1,52 @@
 <?php
-// 读取配置文件
-$configFile = file_get_contents("config.json");
-$config = json_decode($configFile, true);
+  $type=$_GET['type'];
 
-// 从配置文件中获取数据库连接信息
-$servername = $config["servername"];
-$port = $config["port"];
-$user = $config["dbUser"];
-$dbPassword = $config["dbPassword"];
-$dbName = $config["dbName"];
+    // 读取配置文件
+    $configFile = file_get_contents("config.json");
+    $config = json_decode($configFile, true);
 
-// 建立数据库连接
-$conn = new mysqli($servername, $user, $dbPassword, $dbName);
-if ($conn->connect_error) {
-    die("数据库连接失败: " . $conn->connect_error);
-}
+    // 从配置文件中获取数据库连接信息
+    $servername = $config["servername"];
+    $port = $config["port"];
+    $user = $config["dbUser"];
+    $dbPassword = $config["dbPassword"];
+    $dbName = $config["dbName"];
 
-// 查询数据库中的商品类别
-$selectSql = "SELECT DISTINCT type_name FROM shop_type";
-$typeList = $conn->query($selectSql);
+    // 建立数据库连接
+    $conn = new mysqli($servername, $user, $dbPassword, $dbName);
+    if ($conn->connect_error) {
+        die("数据库连接失败: " . $conn->connect_error);
+    }
+
+    // 查询数据库中的商品类别
+    $selectTypeSql = "SELECT DISTINCT type_name FROM shop_type";
+    $typeList = $conn->query($selectTypeSql);
+
+    // 分页功能
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+    $productsPerPage = 8;
+    $offset = ($page - 1) * $productsPerPage;
+
+    // 获取指定类型名称的商品
+    $selectShopSql = "
+        SELECT sp.* 
+        FROM shop_prod sp
+        JOIN shop_type st ON sp.type_id = st.type_id
+        WHERE st.type_name = '$type'
+        ORDER BY sp.prod_id
+        LIMIT $offset, $productsPerPage
+        ";
+    $shopList = $conn->query($selectShopSql);
+
+    // Count the total number of products
+    $totalProductsSql = "SELECT COUNT(*) as total FROM shop_prod";
+    $totalProductsResult = $conn->query($totalProductsSql);
+    $totalProducts = $totalProductsResult->fetch_assoc()['total'];
+
+    // Calculate the total number of pages
+    $totalPages = ceil($totalProducts / $productsPerPage);
+
+    closeDB($conn);
 ?>
 
 <!doctype html>
@@ -96,7 +124,7 @@ $typeList = $conn->query($selectSql);
             // 循环显示商品类别
             while ($row = $typeList->fetch_assoc()) {
               $typeName = $row['type_name'];
-              echo "<li><a href='prod-type.php'>$typeName</a></li>";
+              echo "<li><a href='prod-type.php?type=$typeName'>$typeName</a></li>";
             }
         ?>
       </ul>
@@ -106,14 +134,45 @@ $typeList = $conn->query($selectSql);
     <div id="right">
       <div id="title">类别名称——商品列表</div>
       <div id="p-list">
-        <div class="pro"><img src="" width="173" height="145" alt="">
-          <h1>这里是商品名称</h1>
-          原　价：<span class="font02">￥000</span><br>
-          折扣价：<span class="redfont">￥000</span>
-        </div>
+      <?php
+            if ($shopList->num_rows > 0) {
+              while ($row = $shopList->fetch_assoc()) {
+                $prodID=$row['prod_id'];
+                $prodName = $row['prod_name'];
+                $originalPrice = $row['prod_price'];
+                $discountPrice = $row['prod_discount'];
+                $prodImg = $row['prod_img'];
+
+                echo "<div class='pro'>";
+                echo "<a href='prod-show.php?prod_id=$prodID'><img src='$prodImg' width='173' height='145' alt=''></a>";
+                echo "<h1>$prodName</h1>";
+                echo "原　价：<span class='font02'>￥$originalPrice</span><br>";
+                echo "折扣价：<span class='redfont'>￥$discountPrice</span>";
+                echo "</div>";
+              }
+            } else {
+              echo "<div id='no-pro'>当前数据库中没有任何商品信息</div>";
+            }
+          ?>
       </div>
-      <div id="no-pro">当前数据库中没有任何商品信息</div>
-      <div id="bar">第一页　上一页　下一页　最后一页</div>
+      <div id="bar">
+        <?php
+          if ($totalProducts <= $productsPerPage) {
+            echo "第一页　最后一页";
+          } else {
+            echo "<a href='index.php?page=1'>第一页</a> ";
+            if ($page > 1) {
+              $prevPage = $page - 1;
+              echo "<a href='index.php?page=$prevPage'>上一页</a> ";
+            }
+            if ($page < $totalPages) {
+              $nextPage = $page + 1;
+              echo "<a href='index.php?page=$nextPage'>下一页</a> ";
+            }
+            echo "<a href='index.php?page=$totalPages'>最后一页</a>";
+          }
+        ?>
+      </div>
     </div>
   </div>
   
@@ -130,3 +189,10 @@ $typeList = $conn->query($selectSql);
 </div>
 </body>
 </html>
+
+<?php
+  // 关闭数据库连接
+  function closeDB($connection){
+    $connection->close();
+  }
+?>

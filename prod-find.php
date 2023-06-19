@@ -108,7 +108,7 @@ $searchList=$conn->query($selectSearchSql);
             // 循环显示商品类别
             while ($row = $typeList->fetch_assoc()) {
               $typeName = $row['type_name'];
-              echo "<li><a href='prod-type.php'>$typeName</a></li>";
+              echo "<li><a href='prod-type.php?type=$typeName'>$typeName</a></li>";
             }
         ?>
       </ul>

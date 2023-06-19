@@ -1,4 +1,6 @@
 <?php
+$currentID=$_GET['prod_id'];
+
 // 读取配置文件
 $configFile = file_get_contents("config.json");
 $config = json_decode($configFile, true);
@@ -17,8 +19,13 @@ if ($conn->connect_error) {
 }
 
 // 查询数据库中的商品类别
-$selectSql = "SELECT DISTINCT type_name FROM shop_type";
-$typeList = $conn->query($selectSql);
+$selectTypeSql = "SELECT DISTINCT type_name FROM shop_type";
+$typeList = $conn->query($selectTypeSql);
+
+$selectCurrentSql="select distinct * from shop_prod where prod_id='$currentID'";
+$currentShop=$conn->query($selectCurrentSql);
+
+closeDB($conn);
 ?>
 
 <!doctype html>
@@ -96,7 +103,7 @@ $typeList = $conn->query($selectSql);
             // 循环显示商品类别
             while ($row = $typeList->fetch_assoc()) {
               $typeName = $row['type_name'];
-              echo "<li><a href='prod-type.php'>$typeName</a></li>";
+              echo "<li><a href='prod-type.php?type=$typeName'>$typeName</a></li>";
             }
         ?>
       </ul>
@@ -107,7 +114,20 @@ $typeList = $conn->query($selectSql);
       <div id="title">商品详细信息</div>
       <div id="p-list1">
         <form id="form1" name="form1" method="post">
-          <div id="pro-pic"><img src="" width="300" height="252" alt=""></div>
+          <div id="pro-pic">
+          <?php
+          if ($shopList->num_rows > 0) {
+              while ($row = $shopList->fetch_assoc()) {
+                $prodID=$row['prod_id'];
+                $prodName = $row['prod_name'];
+                $originalPrice = $row['prod_price'];
+                $discountPrice = $row['prod_discount'];
+                $prodImg = $row['prod_img'];
+              }
+            }
+              echo "<img src='$prodImg' width='300' height='252' alt=''>";
+            ?>
+          </div>
           <div id="pro-content">
             <ul>
               <li>商品名称：这里是名称</li>
@@ -135,3 +155,10 @@ $typeList = $conn->query($selectSql);
 </div>
 </body>
 </html>
+
+<?php
+  // 关闭数据库连接
+  function closeDB($connection){
+    $connection->close();
+  }
+?>
