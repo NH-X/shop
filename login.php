@@ -12,7 +12,7 @@
   <div id="top">
     <div id="logo"><img src="images/logo.png" width="222" height="71" alt=""></div>
     <div id="menu">
-      <div id="top1"><a href="#">登录</a>　|　<a href="signin.php">注册</a></div>
+      <div id="top1"><a href="login.php">登录</a>　|　<a href="signin.php">注册</a></div>
       <ul id="nav">
         <li>
           <a href="#">
@@ -91,6 +91,7 @@
 </html>
 
 <?php
+session_start();
 // 读取配置文件
 $configFile = file_get_contents("config.json");
 $config = json_decode($configFile, true);
@@ -122,6 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // 登录成功
         // 这里可以添加进一步的操作，例如设置登录状态或跳转到其他页面
         closeDB($conn);
+        $_SESSION['mem_name']=$username;
         header("Location: index.php");
     } else {
         // 登录失败

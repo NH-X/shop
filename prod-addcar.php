@@ -1,24 +1,40 @@
 <?php
-// 读取配置文件
-$configFile = file_get_contents("config.json");
-$config = json_decode($configFile, true);
+  session_start();
+  $currentID=$_GET['prod_id'];
 
-// 从配置文件中获取数据库连接信息
-$servername = $config["servername"];
-$port = $config["port"];
-$user = $config["dbUser"];
-$dbPassword = $config["dbPassword"];
-$dbName = $config["dbName"];
+  // 读取配置文件
+  $configFile = file_get_contents("config.json");
+  $config = json_decode($configFile, true);
 
-// 建立数据库连接
-$conn = new mysqli($servername, $user, $dbPassword, $dbName);
-if ($conn->connect_error) {
-    die("数据库连接失败: " . $conn->connect_error);
-}
+  // 从配置文件中获取数据库连接信息
+  $servername = $config["servername"];
+  $port = $config["port"];
+  $user = $config["dbUser"];
+  $dbPassword = $config["dbPassword"];
+  $dbName = $config["dbName"];
 
-// 查询数据库中的商品类别
-$selectSql = "SELECT DISTINCT type_name FROM shop_type";
-$typeList = $conn->query($selectSql);
+  // 建立数据库连接
+  $conn = new mysqli($servername, $user, $dbPassword, $dbName);
+  if ($conn->connect_error) {
+      die("数据库连接失败: " . $conn->connect_error);
+  }
+
+  // 查询数据库中的商品类别
+  $selectTypeSql = "SELECT DISTINCT type_name FROM shop_type";
+  $typeList = $conn->query($selectTypeSql);
+
+  $selectCurrentSql="select distinct * from shop_prod where prod_id='$currentID'";
+  $currentShop=$conn->query($selectCurrentSql);
+
+  if ($currentShop->num_rows > 0) {
+    $row = $currentShop->fetch_assoc();
+    $prodID=$row['prod_id'];
+    $prodName = $row['prod_name'];
+    $originalPrice = $row['prod_price'];
+    $discountPrice = $row['prod_discount'];
+    $prodImg = $row['prod_img'];
+    $prodContent = $row['prod_content'];
+  }
 ?>
 
 <!doctype html>
@@ -35,7 +51,7 @@ $typeList = $conn->query($selectSql);
   <div id="top">
     <div id="logo"><img src="images/logo.png" width="222" height="71" alt=""></div>
     <div id="menu">
-      <div id="top1"><a href="#">登录</a>　|　<a href="#">注册</a></div>
+      <div id="top1"><a href="login.php">登录</a>　|　<a href="signin.php">注册</a></div>
       <ul id="nav">
         <li>
           <a href="#">
@@ -111,30 +127,71 @@ $typeList = $conn->query($selectSql);
           <div id="pro-content">
             <ul>
               <li>商品名称：
-                <input name="prod_name" type="text" class="input01" id="prod_name">
+                <!--<input name="prod_name" type="text" class="input01" id="prod_name">-->
+                <?php echo $prodName;?>
               </li>
               <li>商品原价：
-                <input name="prod_price" type="text" class="input02" id="prod_price">
+                <!--<input name="prod_price" type="text" class="input02" id="prod_price">-->
+                <?php echo $originalPrice;?>
               </li>
               <li>折扣价格：
-                <input name="prod_discount" type="text" class="input02" id="prod_discount">
+                <!--<input name="prod_discount" type="text" class="input02" id="prod_discount">-->
+                <?php echo $discountPrice;?>
               </li>
               <li>购买数量：
-                <select name="prodnum" class="input03" id="prodnum">
+                <select name="prodnum" class="input03" id="prodnum"  onchange="updateTotalPrice(this.value)">
                   <option value="1" selected>1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
                   <option value="5">5</option>
                 </select>
-              （请选择购买数量）</li>
-              <li>商品总价：
-                <input name="prodtotal" type="text" class="input02" id="prodtotal">
+              （请选择购买数量）
+              </li>
+              <li>商品总价：<span id="prodtotal"><?php echo $discountPrice; ?></span>
+                <!--<input name="prodtotal" type="text" class="input02" id="prodtotal">-->
+                <script>
+                  function updateTotalPrice(quantity) {
+                    var discountPrice = <?php echo $discountPrice; ?>;
+                    var totalPrice = discountPrice * quantity;
+                    document.getElementById("prodtotal").textContent = totalPrice;
+                  }
+                </script>
               </li>
             </ul>
             <input name="add-btn1" type="submit" class="btn1" id="add-btn1" value="确认购买">
           </div>
         </form>
+        <?php 
+          //点击添加购物车按钮，将数据存储到数据库中
+          if(isset($_POST['add-btn1'])){
+            // 获取用户ID
+            $memID = $_SESSION['mem_name'];
+            //判断当前是否位会员登录
+            if($memID == null){
+              header("Location: login.php");
+            }
+
+            // 获取购买数量和商品总价
+            $prodNum = $_POST['prodnum'];
+            $prodTotal = $discountPrice * $prodNum;
+
+            // 获取商品名称和商品内容（假设在之前的代码中已经获取）
+            $prodName = $prodName;
+            $prodContent = $prodContent;
+
+            // 插入购物车记录
+            $insertCartSql = "INSERT INTO shop_car 
+              (mem_id, prod_id, prodnum, prodprice, prodtotal, prodname, prodcontent,date_add
+              ) VALUES (
+                '$memID', '$prodID', '$prodNum', '$discountPrice', '$prodTotal', '$prodName', '$prodContent',NOW())";
+            if ($conn->query($insertCartSql) === TRUE) {
+                echo "商品已成功加入购物车！";
+            } else {
+                echo "加入购物车失败：" . $conn->error;
+            }
+          }
+        ?>
       </div>
     </div>
   </div>
@@ -152,3 +209,12 @@ $typeList = $conn->query($selectSql);
 </div>
 </body>
 </html>
+
+<?php
+  closeDB($conn);
+
+  // 关闭数据库连接
+  function closeDB($connection){
+    $connection->close();
+  }
+?>

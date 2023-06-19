@@ -25,6 +25,16 @@ $typeList = $conn->query($selectTypeSql);
 $selectCurrentSql="select distinct * from shop_prod where prod_id='$currentID'";
 $currentShop=$conn->query($selectCurrentSql);
 
+if ($currentShop->num_rows > 0) {
+  $row = $currentShop->fetch_assoc();
+  $prodID=$row['prod_id'];
+  $prodName = $row['prod_name'];
+  $originalPrice = $row['prod_price'];
+  $discountPrice = $row['prod_discount'];
+  $prodImg = $row['prod_img'];
+  $prodContent = $row['prod_content'];
+}
+
 closeDB($conn);
 ?>
 
@@ -112,17 +122,6 @@ closeDB($conn);
     
     <div id="right">
       <div id="title">商品详细信息</div>
-        <?php
-          if ($currentShop->num_rows > 0) {
-              $row = $currentShop->fetch_assoc();
-              $prodID=$row['prod_id'];
-              $prodName = $row['prod_name'];
-              $originalPrice = $row['prod_price'];
-              $discountPrice = $row['prod_discount'];
-              $prodImg = $row['prod_img'];
-              $prodContent = $row['prod_content'];
-            }
-        ?>
       <div id="p-list1">
         <form id="form1" name="form1" method="post" action="prod-addcar.php?prod_id=<?php echo $prodID;?>">
           <div id="pro-pic">
