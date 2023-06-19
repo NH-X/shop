@@ -118,7 +118,7 @@
   <div id="main">
     <div id="left">
       <ul>
-        <li><a href="#">在线商城主页面</a></li>
+        <li><a href="index.php">在线商城主页面</a></li>
         <?php
             // 循环显示商品类别
             while ($row = $typeList->fetch_assoc()) {
