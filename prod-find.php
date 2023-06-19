@@ -49,7 +49,7 @@ $searchList=$conn->query($selectSearchSql);
           </a>
         </li>
         <li>
-          <a href="index.php">
+          <a href="#">
             <span class="en">NEWS</span>
             <span class="cn">新闻资讯</span>
           </a>

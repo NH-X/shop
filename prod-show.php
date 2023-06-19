@@ -51,7 +51,7 @@ closeDB($conn);
           </a>
         </li>
         <li>
-          <a href="index.php">
+          <a href="#">
             <span class="en">NEWS</span>
             <span class="cn">新闻资讯</span>
           </a>
@@ -116,24 +116,24 @@ closeDB($conn);
         <form id="form1" name="form1" method="post">
           <div id="pro-pic">
           <?php
-          if ($shopList->num_rows > 0) {
-              while ($row = $shopList->fetch_assoc()) {
-                $prodID=$row['prod_id'];
-                $prodName = $row['prod_name'];
-                $originalPrice = $row['prod_price'];
-                $discountPrice = $row['prod_discount'];
-                $prodImg = $row['prod_img'];
-              }
-            }
+          if ($currentShop->num_rows > 0) {
+              $row = $currentShop->fetch_assoc();
+              $prodID=$row['prod_id'];
+              $prodName = $row['prod_name'];
+              $originalPrice = $row['prod_price'];
+              $discountPrice = $row['prod_discount'];
+              $prodImg = $row['prod_img'];
+              $prodContent = $row['prod_content'];
               echo "<img src='$prodImg' width='300' height='252' alt=''>";
+            }
             ?>
           </div>
           <div id="pro-content">
             <ul>
-              <li>商品名称：这里是名称</li>
-              <li>商品原价：<span class="font02">￥000</span></li>
-              <li>折扣价格：<span class="redfont">￥000</span></li>
-              <li>这里是说明内容</li>
+              <li>商品名称：<?php echo $prodName;?></li>
+              <li>商品原价：<span class="font02">￥<?php echo $originalPrice;?></span></li>
+              <li>折扣价格：<span class="redfont">￥<?php echo $discountPrice;?></span></li>
+              <li><?php echo $prodContent;?></li>
             </ul>
             <input name="add-btn1" type="submit" class="btn1" id="add-btn1" value="加入购物车">
           </div>
