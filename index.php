@@ -26,7 +26,7 @@
     $offset = ($page - 1) * $productsPerPage;
 
     // 查询数据库中的商品
-    $selectShopSql = "SELECT * FROM shop_prod ORDER BY prod_id LIMIT $offset, $productsPerPage";
+    $selectShopSql = "SELECT * FROM shop_prod ORDER BY prod_id desc LIMIT $offset, $productsPerPage";
     $shopList = $conn->query($selectShopSql);
 
     // Count the total number of products
@@ -107,10 +107,11 @@
 <div class="col1">
   <div class="title1">在线商城</div>
     <div id="news-search">
-      <form id="form1" name="form1" method="post" action="prod-find.php">
+    <form id="form1" name="form1" method="post" action="prod-find.php">
         商品搜索：
-          <input name="search-name" type="text" id="search-name" placeholder="请输入搜索关键字">
-        <input type="submit" name="sbtn" id="sbtn" value="搜 索" class="btn01">
+        <input name="search-name" type="text" id="search-name" placeholder="请输入搜索关键字">
+        <input type="submit" name="search-btn" id="sbtn" value="搜 索" class="btn01">
+        <input type="hidden" name="search-form" value="true">
       </form>
     </div>
   
@@ -136,13 +137,14 @@
           <?php
             if ($shopList->num_rows > 0) {
               while ($row = $shopList->fetch_assoc()) {
+                $prodID=$row['prod_id'];
                 $prodName = $row['prod_name'];
                 $originalPrice = $row['prod_price'];
                 $discountPrice = $row['prod_discount'];
                 $prodImg = $row['prod_img'];
 
                 echo "<div class='pro'>";
-                echo "<img src='$prodImg' width='173' height='145' alt=''>";
+                echo "<a href='prod-show.php?prod_id=$prodID'><img src='$prodImg' width='173' height='145' alt=''></a>";
                 echo "<h1>$prodName</h1>";
                 echo "原　价：<span class='font02'>￥$originalPrice</span><br>";
                 echo "折扣价：<span class='redfont'>￥$discountPrice</span>";

@@ -1,4 +1,6 @@
 <?php
+$searchKeyword = $_POST['search-name'];
+
 // 读取配置文件
 $configFile = file_get_contents("config.json");
 $config = json_decode($configFile, true);
@@ -17,8 +19,11 @@ if ($conn->connect_error) {
 }
 
 // 查询数据库中的商品类别
-$selectSql = "SELECT DISTINCT type_name FROM shop_type";
-$typeList = $conn->query($selectSql);
+$selectTypeSql = "SELECT DISTINCT type_name FROM shop_type";
+$typeList = $conn->query($selectTypeSql);
+
+$selectSearchSql="SELECT DISTINCT * from shop_prod where prod_name = '$searchKeyword'";
+$searchList=$conn->query($selectSearchSql);
 ?>
 
 <!doctype html>
@@ -89,14 +94,16 @@ $typeList = $conn->query($selectSql);
 <div class="col1">
   <div class="title1">在线商城</div>
     <div id="news-search">
-      您输入的搜索关键字为：<span class="redfont">关键字</span>
+      您输入的搜索关键字为：<span class="redfont">
+        <?php echo $searchKeyword?>
+      </span>
     </div>
     
   
   <div id="main">
     <div id="left">
       <ul>
-        <li><a href="#">在线商城主页面</a></li>
+        <li><a href="index.php">在线商城主页面</a></li>
         <?php
             // 循环显示商品类别
             while ($row = $typeList->fetch_assoc()) {
@@ -111,13 +118,29 @@ $typeList = $conn->query($selectSql);
     <div id="right">
       <div id="title">搜索结果</div>
       <div id="p-list">
-        <div class="pro"><img src="" width="173" height="145" alt="">
-          <h1>这里是商品名称</h1>
-          原　价：<span class="font02">￥000</span><br>
-          折扣价：<span class="redfont">￥000</span>
-        </div>
+        <?php
+          // 判断是否有搜索结果
+          if ($searchList->num_rows > 0) {
+            // 循环显示搜索结果
+            while ($row = $searchList->fetch_assoc()) {
+              $prodID=$row['prod_id'];
+              $prodName = $row['prod_name'];
+              $originalPrice = $row['prod_price'];
+              $discountPrice = $row['prod_discount'];
+              $prodImg = $row['prod_img'];
+
+              echo "<div class='pro'>
+                      <a href='prod-show.php?prod_id=$prodID'><img src='$prodImg' width='173' height='145' alt=''></a>
+                      <h1>$prodName</h1>
+                      原　价：<span class='font02'>￥$originalPrice</span><br>
+                      折扣价：<span class='redfont'>￥$discountPrice</span>
+                    </div>";
+            }
+          } else {
+            echo "<div id='no-pro'>没有符合【关键字：$searchKeyword 】的商品</div>";
+          }
+        ?>
       </div>
-      <div id="no-pro">没有符合【关键字：XXX】的商品</div>
     </div>
   </div>
   
