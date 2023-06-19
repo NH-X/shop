@@ -112,10 +112,7 @@ closeDB($conn);
     
     <div id="right">
       <div id="title">商品详细信息</div>
-      <div id="p-list1">
-        <form id="form1" name="form1" method="post">
-          <div id="pro-pic">
-          <?php
+        <?php
           if ($currentShop->num_rows > 0) {
               $row = $currentShop->fetch_assoc();
               $prodID=$row['prod_id'];
@@ -124,8 +121,13 @@ closeDB($conn);
               $discountPrice = $row['prod_discount'];
               $prodImg = $row['prod_img'];
               $prodContent = $row['prod_content'];
-              echo "<img src='$prodImg' width='300' height='252' alt=''>";
             }
+        ?>
+      <div id="p-list1">
+        <form id="form1" name="form1" method="post" action="prod-addcar.php?prod_id=<?php echo $prodID;?>">
+          <div id="pro-pic">
+            <?php
+              echo "<img src='$prodImg' width='300' height='252' alt=''>";
             ?>
           </div>
           <div id="pro-content">
