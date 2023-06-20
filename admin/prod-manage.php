@@ -133,21 +133,31 @@
                 echo "<div class='pro'>";
                 echo "<img src='../$prodImg' width='173' height='145' alt=''>";
                 echo "<h1>$prodName</h1>";
-                echo "<a href='prod-updata.php?prod_id=$prodID' class='link01'>修改</a>】 【<a href='#' class='link01'>删除</a>】";
+                echo "【<a href='prod-updata.php?prod_id=$prodID' class='link01'>修改</a>】 【<a href='#' class='link01'>删除</a>】";
                 echo "</div>";
               }
             } else {
               echo "<div id='no-pro'>当前数据库中没有任何商品信息</div>";
             }
           ?>
-
-        <div class="pro"><img src="" width="173" height="145" alt="">
-          <h1>这里是商品名称</h1>
-          【<a href="#" class="link01">修改</a>】 【<a href="#" class="link01">删除</a>】
-        </div>
       </div>
-      <div id="no-pro">当前数据库中没有任何商品信息</div>
-      <div id="bar">第一页　上一页　下一页　最后一页</div>
+      <div id="bar"><?php
+          if ($totalProducts <= $productsPerPage) {
+            echo "第一页　最后一页";
+          } else {
+            echo "<a href='index.php?page=1'>第一页</a> ";
+            if ($page > 1) {
+              $prevPage = $page - 1;
+              echo "<a href='index.php?page=$prevPage'>上一页</a> ";
+            }
+            if ($page < $totalPages) {
+              $nextPage = $page + 1;
+              echo "<a href='index.php?page=$nextPage'>下一页</a> ";
+            }
+            echo "<a href='index.php?page=$totalPages'>最后一页</a>";
+          }
+        ?>
+        </div>
       
     </div>
   </div>
