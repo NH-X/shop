@@ -110,12 +110,12 @@
   <div id="main">
     <div id="left">
       <ul>
-        <li><a href="#">商品管理</a></li>
-        <li>添加商品</li>
-        <li>商品分类管理</li>
-        <li>添加商品分类</li>
+        <li><a href="prod-manage.php">商品管理</a></li>
+        <li><a href="prod-add.php">添加商品</a></li>
+        <li><a href="type-manage.php">商品分类管理</a></li>
+        <li><a href="type-add.php">添加商品分类</a></li>
       </ul>
-      <div class="xwglbtn"><a href="#">返回商城首页</a></div>
+      <div class="xwglbtn"><a href="../index.php">返回商城首页</a></div>
     </div>
     
     <div id="right">

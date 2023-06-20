@@ -1,3 +1,22 @@
+<?php
+    // 读取配置文件
+    $configFile = file_get_contents("../config.json");
+    $config = json_decode($configFile, true);
+
+    // 从配置文件中获取数据库连接信息
+    $servername = $config["servername"];
+    $port = $config["port"];
+    $user = $config["dbUser"];
+    $dbPassword = $config["dbPassword"];
+    $dbName = $config["dbName"];
+
+    // 建立数据库连接
+    $conn = new mysqli($servername, $user, $dbPassword, $dbName);
+    if ($conn->connect_error) {
+        die("数据库连接失败: " . $conn->connect_error);
+    }
+?>
+
 <!doctype html>
 <html>
 <head>
@@ -68,12 +87,12 @@
   <div id="main">
     <div id="left">
       <ul>
-        <li><a href="#">商品管理</a></li>
-        <li>添加商品</li>
-        <li>商品分类管理</li>
-        <li>添加商品分类</li>
+        <li><a href="prod-manage.php">商品管理</a></li>
+        <li><a href="prod-add.php">添加商品</a></li>
+        <li><a href="type-manage.php">商品分类管理</a></li>
+        <li><a href="type-add.php">添加商品分类</a></li>
       </ul>
-      <div class="xwglbtn"><a href="#">返回商城首页</a></div>
+      <div class="xwglbtn"><a href="../index.php">返回商城首页</a></div>
     </div>
     
     <div id="right">
@@ -103,3 +122,24 @@
 </div>
 </body>
 </html>
+
+<?php
+//点击添加购物车按钮，将数据存储到数据库中
+if(isset($_POST['submit'])){
+  $newProdType=isset($_POST['type_name']) ? $_POST['type_name'] :"";
+
+  // 插入购物车记录
+  $insertTypeSql = "INSERT INTO shop_type (type_name) VALUES ('$newProdType')";
+  if ($conn->query($insertTypeSql) === TRUE) {
+      echo "添加成功！";
+  } else {
+      echo "添加失败：" . $conn->error;
+  }
+}
+  closeDB($conn);
+
+  // 关闭数据库连接
+  function closeDB($connection){
+    $connection->close();
+  }
+?>

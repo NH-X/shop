@@ -1,3 +1,26 @@
+<?php
+    // 读取配置文件
+    $configFile = file_get_contents("../config.json");
+    $config = json_decode($configFile, true);
+
+    // 从配置文件中获取数据库连接信息
+    $servername = $config["servername"];
+    $port = $config["port"];
+    $user = $config["dbUser"];
+    $dbPassword = $config["dbPassword"];
+    $dbName = $config["dbName"];
+
+    // 建立数据库连接
+    $conn = new mysqli($servername, $user, $dbPassword, $dbName);
+    if ($conn->connect_error) {
+        die("数据库连接失败: " . $conn->connect_error);
+    }
+
+    // 查询数据库中的商品类别
+    $selectTypeSql = "SELECT DISTINCT type_name FROM shop_type";
+    $typeList = $conn->query($selectTypeSql);
+?>
+
 <!doctype html>
 <html>
 <head>
@@ -68,12 +91,12 @@
   <div id="main">
     <div id="left">
       <ul>
-        <li><a href="#">商品管理</a></li>
-        <li>添加商品</li>
-        <li>商品分类管理</li>
-        <li>添加商品分类</li>
+        <li><a href="prod-manage.php">商品管理</a></li>
+        <li><a href="prod-add.php">添加商品</a></li>
+        <li><a href="type-manage.php">商品分类管理</a></li>
+        <li><a href="type-add.php">添加商品分类</a></li>
       </ul>
-      <div class="xwglbtn"><a href="#">返回商城首页</a></div>
+      <div class="xwglbtn"><a href="../index.php">返回商城首页</a></div>
     </div>
     
     <div id="right">
@@ -86,7 +109,14 @@
         </div>
         <div id="type-list2">
           <dl>
-            <dt>分类名称</dt><dd>【<a href="#">编辑</a>】 【<a href="#">删除</a>】</dd>
+            <?php
+              // 循环显示商品类别
+                while ($row = $typeList->fetch_assoc()) {
+                  $typeName = $row['type_name'];
+                  echo "<dt>$typeName</dt>";
+                  echo "<dd>【<a href='type-updata.php'>编辑</a>】【<a href='#'>删除</a>】</dd>";
+                }
+            ?>
           </dl>
         </div>
       </div>
