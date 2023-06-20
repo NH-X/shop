@@ -37,6 +37,17 @@
     // Calculate the total number of pages
     $totalPages = ceil($totalProducts / $productsPerPage);
 
+    // 获取要删除的商品ID
+    $prodID = $_GET['prod_id'];
+
+    // 删除商品
+    $deleteProdSql = "DELETE FROM shop_prod WHERE prod_id = $prodID";
+    if ($conn->query($deleteProdSql) === TRUE) {
+        echo "商品删除成功";
+    } else {
+        echo "商品删除失败: " . $conn->error;
+    }
+
     closeDB($conn);
 ?>
 
@@ -133,7 +144,8 @@
                 echo "<div class='pro'>";
                 echo "<img src='../$prodImg' width='173' height='145' alt=''>";
                 echo "<h1>$prodName</h1>";
-                echo "【<a href='prod-updata.php?prod_id=$prodID' class='link01'>修改</a>】 【<a href='#' class='link01'>删除</a>】";
+                echo "【<a href='prod-updata.php?prod_id=$prodID' class='link01'>修改</a>】 ";
+                echo "【<a href='#' class='link01' onclick='confirmDelete($prodID)'>删除</a>】";
                 echo "</div>";
               }
             } else {
@@ -145,16 +157,16 @@
           if ($totalProducts <= $productsPerPage) {
             echo "第一页　最后一页";
           } else {
-            echo "<a href='index.php?page=1'>第一页</a> ";
+            echo "<a href='prod-manage.php?page=1'>第一页</a> ";
             if ($page > 1) {
               $prevPage = $page - 1;
-              echo "<a href='index.php?page=$prevPage'>上一页</a> ";
+              echo "<a href='prod-manage.php?page=$prevPage'>上一页</a> ";
             }
             if ($page < $totalPages) {
               $nextPage = $page + 1;
-              echo "<a href='index.php?page=$nextPage'>下一页</a> ";
+              echo "<a href='prod-manage.php?page=$nextPage'>下一页</a> ";
             }
-            echo "<a href='index.php?page=$totalPages'>最后一页</a>";
+            echo "<a href='prod-manage.php?page=$totalPages'>最后一页</a>";
           }
         ?>
         </div>
@@ -175,6 +187,14 @@
 </div>
 </body>
 </html>
+
+<script>
+  function confirmDelete(prodID) {
+    if (confirm("确定要删除该商品吗？")) {
+      window.location.href = "delete-product.php?prod_id=" + prodID;
+    }
+  }
+</script>
 
 <?php
   // 关闭数据库连接
