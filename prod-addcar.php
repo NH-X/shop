@@ -162,36 +162,6 @@
             <input name="add-btn1" type="submit" class="btn1" id="add-btn1" value="确认购买">
           </div>
         </form>
-        <?php 
-          //点击添加购物车按钮，将数据存储到数据库中
-          if(isset($_POST['add-btn1'])){
-            // 获取用户ID
-            $memID = $_SESSION['mem_name'];
-            //判断当前是否位会员登录
-            if($memID == null){
-              header("Location: login.php");
-            }
-
-            // 获取购买数量和商品总价
-            $prodNum = $_POST['prodnum'];
-            $prodTotal = $discountPrice * $prodNum;
-
-            // 获取商品名称和商品内容（假设在之前的代码中已经获取）
-            $prodName = $prodName;
-            $prodContent = $prodContent;
-
-            // 插入购物车记录
-            $insertCartSql = "INSERT INTO shop_car 
-              (mem_id, prod_id, prodnum, prodprice, prodtotal, prodname, prodcontent,date_add
-              ) VALUES (
-                '$memID', '$prodID', '$prodNum', '$discountPrice', '$prodTotal', '$prodName', '$prodContent',NOW())";
-            if ($conn->query($insertCartSql) === TRUE) {
-                echo "商品已成功加入购物车！";
-            } else {
-                echo "加入购物车失败：" . $conn->error;
-            }
-          }
-        ?>
       </div>
     </div>
   </div>
@@ -211,6 +181,34 @@
 </html>
 
 <?php
+//点击添加购物车按钮，将数据存储到数据库中
+if(isset($_POST['add-btn1'])){
+  // 获取用户ID
+  $memID = $_SESSION['mem_name'];
+  //判断当前是否位会员登录
+  if($memID == null){
+    header("Location: login.php");
+  }
+
+  // 获取购买数量和商品总价
+  $prodNum = $_POST['prodnum'];
+  $prodTotal = $discountPrice * $prodNum;
+
+  // 获取商品名称和商品内容（假设在之前的代码中已经获取）
+  $prodName = $prodName;
+  $prodContent = $prodContent;
+
+  // 插入购物车记录
+  $insertCartSql = "INSERT INTO shop_car 
+    (mem_id, prod_id, prodnum, prodprice, prodtotal, prodname, prodcontent,date_add
+    ) VALUES (
+      '$memID', '$prodID', '$prodNum', '$discountPrice', '$prodTotal', '$prodName', '$prodContent',NOW())";
+  if ($conn->query($insertCartSql) === TRUE) {
+      echo "商品已成功加入购物车！";
+  } else {
+      echo "加入购物车失败：" . $conn->error;
+  }
+}
   closeDB($conn);
 
   // 关闭数据库连接
