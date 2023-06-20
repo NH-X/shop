@@ -1,3 +1,43 @@
+<?php
+$currentID=$_GET['prod_id'];
+
+// 读取配置文件
+$configFile = file_get_contents("../config.json");
+$config = json_decode($configFile, true);
+
+// 从配置文件中获取数据库连接信息
+$servername = $config["servername"];
+$port = $config["port"];
+$user = $config["dbUser"];
+$dbPassword = $config["dbPassword"];
+$dbName = $config["dbName"];
+
+// 建立数据库连接
+$conn = new mysqli($servername, $user, $dbPassword, $dbName);
+if ($conn->connect_error) {
+    die("数据库连接失败: " . $conn->connect_error);
+}
+
+// 查询数据库中的商品类别
+$selectTypeSql = "SELECT DISTINCT type_name FROM shop_type";
+$typeList = $conn->query($selectTypeSql);
+
+$selectCurrentSql="select distinct * from shop_prod where prod_id='$currentID'";
+$currentShop=$conn->query($selectCurrentSql);
+
+if ($currentShop->num_rows > 0) {
+  $row = $currentShop->fetch_assoc();
+  $prodID=$row['prod_id'];
+  $prodName = $row['prod_name'];
+  $originalPrice = $row['prod_price'];
+  $discountPrice = $row['prod_discount'];
+  $prodImg = $row['prod_img'];
+  $prodContent = $row['prod_content'];
+}
+
+closeDB($conn);
+?>
+
 <!doctype html>
 <html>
 <head>
@@ -83,22 +123,32 @@
         <form id="form1" name="form1" method="post">
         <ul>
           <li>商品名称：
-          <input name="prod_name1" type="text" required class="input04" id="prod_name1" placeholder="请输入商品名称"></li>
+          <input value="<?php echo $prodName;?>" name="prod_name1" type="text" required class="input04" id="prod_name1" placeholder="请输入商品名称"></li>
           <li>商品原价：
-            <input name="prod_price1" type="text" required class="input04" id="prod_price1" placeholder="请输入商品原价">
+            <input value="<?php echo $originalPrice;?>" name="prod_price1" type="text" required class="input04" id="prod_price1" placeholder="请输入商品原价">
           </li>
           <li>折扣价格：
-            <input name="prod_discount1" type="text" required class="input04" id="prod_discount1" placeholder="请输入商品折扣价格">
+            <input value="<?php echo $discountPrice;?>" name="prod_discount1" type="text" required class="input04" id="prod_discount1" placeholder="请输入商品折扣价格">
           </li>
           <li>商品类别：
-            <select name="type_id1" class="input02" id="type_id1">
-            </select>
+          <select name="type_id1" class="input02" id="type_id1">
+            <?php
+              if ($typeList->num_rows > 0) {
+                while ($type = $typeList->fetch_assoc()) {
+                  $typeName = $type['type_name'];
+                  echo "<option value=\"$typeName\">$typeName</option>";
+                }
+              }
+            ?>
+          </select>
           </li>
           <li>商品图片：
             <input type="button" name="addpic_btn1" id="addpic_btn1" value="上传图片">
-            <img src="" alt="" width="173" height="145" class="pic03"></li>
+            <img src="<?php echo ".$prodImg"?>" alt="" width="173" height="145" class="pic03"></li>
           <li>商品说明：
-            <textarea name="prod_content1" required class="input05" id="prod_content1" placeholder="请输入商品说明内容"></textarea>
+            <textarea name="prod_content1" required class="input05" id="prod_content1" placeholder="请输入商品说明内容">
+              <?php echo $prodContent ?>
+            </textarea>
           </li>
         </ul>
           <input name="submit" type="submit" class="btn3" id="submit" value="确认修改">
@@ -121,3 +171,10 @@
 </div>
 </body>
 </html>
+
+<?php
+  // 关闭数据库连接
+  function closeDB($connection){
+    $connection->close();
+  }
+?>
